@@ -1,0 +1,23 @@
+:host = localhost:4000
+
+# GET /status
+GET http://:host/status
+
+# PUT /cars
+PUT http://:host/cars
+Content-Type: application/json
+
+[
+  {
+    "id": 2,
+    "seats": 6
+  },
+  {
+    "id": 3,
+    "seats": 5
+  },
+  {
+    "id": 7,
+    "seats": 4
+  }
+]
