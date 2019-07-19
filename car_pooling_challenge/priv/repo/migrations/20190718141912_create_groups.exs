@@ -6,6 +6,8 @@ defmodule CarPoolingChallenge.Repo.Migrations.CreateGroups do
       add :id, :bigint, primary_key: true
       add :people, :integer
       add :car_id, references(:cars, on_delete: :delete_all), null: true
+
+      timestamps()
     end
 
   end

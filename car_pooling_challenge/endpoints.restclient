@@ -38,8 +38,8 @@ POST http://:host/journey
 Content-Type: application/json
 
 {
-  "id": 3,
-  "people": 2
+  "id": 4,
+  "people": 4
 }
 
 # POST /dropoff

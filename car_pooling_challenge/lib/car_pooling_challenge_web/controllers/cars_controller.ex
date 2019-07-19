@@ -2,6 +2,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
   use CarPoolingChallengeWeb, :controller
 
   alias CarPoolingChallenge.Car
+  alias CarPoolingChallenge.Group
   alias CarPoolingChallenge.Repo
 
   require Logger
@@ -24,6 +25,9 @@ defmodule CarPoolingChallengeWeb.CarsController do
            cars_changeset
            |> Enum.map(&Repo.insert/1)
            |> Enum.find(fn {status, _} -> status == :error end) do
+      # Check if there are any groups waiting
+      Group.assign_groups()
+
       conn |> send_resp(200, "")
     else
       err ->
