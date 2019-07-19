@@ -13,6 +13,8 @@ defmodule CarPoolingChallenge.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:id, :people, :car_id])
+    |> validate_inclusion(:people, 1..6)
     |> validate_required([:id, :people])
+    |> unique_constraint(:id, name: :groups_pkey)
   end
 end

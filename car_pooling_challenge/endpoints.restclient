@@ -22,11 +22,26 @@ Content-Type: application/json
   }
 ]
 
+# PUT /cars
+PUT http://:host/cars
+Content-Type: application/json
+
+[
+  {
+    "id": 2,
+    "seats": 6
+  }
+]
+
 # POST /journey
 POST http://:host/journey
 Content-Type: application/json
 
 {
-  "id": 1,
-  "people": 4
+  "id": 3,
+  "people": 2
 }
+
+# POST /dropoff
+POST http://:host/dropoff?ID=3
+Content-Type: application/x-www-form-urlencoded

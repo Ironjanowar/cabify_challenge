@@ -11,5 +11,6 @@ defmodule CarPoolingChallengeWeb.Router do
     get("/status", StatusController, :status)
     put("/cars", CarsController, :set_cars)
     post("/journey", JourneyController, :new_journey)
+    post("/dropoff", JourneyController, :dropoff)
   end
 end

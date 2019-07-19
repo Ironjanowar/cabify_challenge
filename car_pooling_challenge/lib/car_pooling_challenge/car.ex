@@ -36,7 +36,10 @@ defmodule CarPoolingChallenge.Car do
 
     case Repo.all(query) do
       [car | _] ->
-        Ecto.Changeset.change(car, groups: [group], free_seats: car.free_seats - group.people)
+        Ecto.Changeset.change(car,
+          groups: [group | car.groups],
+          free_seats: car.free_seats - group.people
+        )
         |> Repo.update()
 
       _ ->
