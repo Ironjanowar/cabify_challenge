@@ -12,7 +12,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
   schema. Then assign a car to the group if possible.
 
   """
-  def new_journey(conn, params) do
+  def journey(conn, params) do
     with group_changeset <- Group.changeset(%Group{}, params),
          true <- group_changeset.valid?,
          {:ok, group} <- Repo.insert(group_changeset) do
@@ -25,8 +25,8 @@ defmodule CarPoolingChallengeWeb.JourneyController do
 
   @doc """
 
-  Validates the input params and checks if the given ID exists in the
-  database.
+  Validates the input parameters and checks if the given ID exists in the
+  database. After that the given group is removed from the database.
 
   """
   def dropoff(conn, params) do
@@ -42,6 +42,27 @@ defmodule CarPoolingChallengeWeb.JourneyController do
       conn |> send_resp(200, "")
     else
       _ -> conn |> send_resp(400, "")
+    end
+  end
+
+  @doc """
+
+  Validates the input parameters and searches for the given group in
+  the database. Returns via HTTP the car where the group is or nothing
+  if the group is waiting to be assigned to a car.
+
+  """
+  def locate(conn, params) do
+    with {:param, {:ok, id}} <- {:param, Map.fetch(params, "ID")},
+         query <- from(g in Group, where: g.id == ^id, preload: [:car]),
+         {:group, group} when not is_nil(group) <- {:group, Repo.one(query)},
+         {:car, car} when not is_nil(car) <- {:car, Map.get(group, :car)} do
+      conn |> render("car.json", %{car: car})
+    else
+      {:param, _} -> conn |> send_resp(400, "")
+      {:group, _} -> conn |> send_resp(404, "")
+      {:car, _} -> conn |> send_resp(204, "")
+      _ -> conn |> send_resp(500, "")
     end
   end
 end
