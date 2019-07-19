@@ -17,7 +17,16 @@ Content-Type: application/json
     "seats": 5
   },
   {
-    "id": 7,
+    "id": 4,
     "seats": 4
   }
 ]
+
+# POST /journey
+POST http://:host/journey
+Content-Type: application/json
+
+{
+  "id": 1,
+  "people": 4
+}

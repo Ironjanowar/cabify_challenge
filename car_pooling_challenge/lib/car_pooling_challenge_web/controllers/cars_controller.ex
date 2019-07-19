@@ -4,6 +4,8 @@ defmodule CarPoolingChallengeWeb.CarsController do
   alias CarPoolingChallenge.Car
   alias CarPoolingChallenge.Repo
 
+  require Logger
+
   @doc """
 
   Validates the input parameters. Since the expected parameter is a list of
@@ -24,7 +26,9 @@ defmodule CarPoolingChallengeWeb.CarsController do
            |> Enum.find(fn {status, _} -> status == :error end) do
       conn |> send_resp(200, "")
     else
-      _ -> conn |> send_resp(404, "Bad request")
+      err ->
+        err |> inspect |> Logger.error()
+        conn |> send_resp(400, "")
     end
   end
 
