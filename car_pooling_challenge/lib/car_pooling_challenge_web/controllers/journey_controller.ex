@@ -34,7 +34,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
   def dropoff(conn, params) do
     with id when not is_nil(id) <- params["ID"],
          query <- from(g in Group, where: g.id == ^id, preload: [:car]),
-         group when not is_nil(group) <- Repo.one(query),
+         {:group, group} when not is_nil(group) <- {:group, Repo.one(query)},
          {:ok, group} <- Repo.delete(group),
          {:car, car_id} when not is_nil(car_id) <- {:car, group.car_id},
          car_query <- from(c in Car, where: c.id == ^car_id),
@@ -45,6 +45,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
       conn |> send_resp(200, "")
     else
       {:car, nil} -> conn |> send_resp(200, "")
+      {:group, _} -> conn |> send_resp(404, "")
       _ -> conn |> send_resp(400, "")
     end
   end

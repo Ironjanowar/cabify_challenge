@@ -5,8 +5,6 @@ defmodule CarPoolingChallengeWeb.CarsController do
   alias CarPoolingChallenge.Group
   alias CarPoolingChallenge.Repo
 
-  require Logger
-
   @doc """
 
   Validates the input parameters. Since the expected parameter is a list of
@@ -30,9 +28,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
 
       conn |> send_resp(200, "")
     else
-      err ->
-        err |> inspect |> Logger.error()
-        conn |> send_resp(400, "")
+      _ -> conn |> send_resp(400, "")
     end
   end
 
