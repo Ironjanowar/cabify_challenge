@@ -25,22 +25,26 @@ defmodule CarPoolingChallengeWeb.JourneyController do
 
   @doc """
 
-  Validates the input parameters and checks if the given ID exists in the
-  database. After that the given group is removed from the database.
+  Validates the input parameters and checks if the given ID exists in
+  the database. After that the given group is removed from the
+  database, if they are assigned to a car it sums the number of people
+  in the group to the free seats attribute from the car.
 
   """
   def dropoff(conn, params) do
     with id when not is_nil(id) <- params["ID"],
          query <- from(g in Group, where: g.id == ^id, preload: [:car]),
          group when not is_nil(group) <- Repo.one(query),
-         {:ok, group} <- Repo.delete(group) do
-      car_id = group.car.id
-      q = from(c in Car, where: c.id == ^car_id)
-      car = q |> Repo.one()
-      Ecto.Changeset.change(car, free_seats: car.free_seats + group.people) |> Repo.update()
+         {:ok, group} <- Repo.delete(group),
+         {:car, car_id} when not is_nil(car_id) <- {:car, group.car_id},
+         car_query <- from(c in Car, where: c.id == ^car_id),
+         {:car, car} when not is_nil(car) <- {:car, Repo.one(car_query)},
+         changeset <- Ecto.Changeset.change(car, free_seats: car.free_seats + group.people) do
+      Repo.update(changeset)
 
       conn |> send_resp(200, "")
     else
+      {:car, nil} -> conn |> send_resp(200, "")
       _ -> conn |> send_resp(400, "")
     end
   end
