@@ -28,11 +28,16 @@ defmodule CarPoolingChallenge.Car do
   Tries to place a given group into an available car. If there is no
   available car, returns :no_car.
 
-  NOTE: There is no optimization for placing the groups by now.
+  Assigns the car that leaves less free space.
 
   """
   def assign_car(group) do
-    query = from(c in Car, where: c.free_seats >= ^group.people, preload: [:groups])
+    query =
+      from(c in Car,
+        where: c.free_seats >= ^group.people,
+        order_by: [asc: c.free_seats - ^group.people],
+        preload: [:groups]
+      )
 
     case Repo.all(query) do
       [car | _] ->
