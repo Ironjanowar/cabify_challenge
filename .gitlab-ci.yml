@@ -19,7 +19,7 @@ remove_me:
 
 build:
   stage: build
-  image: # Add an image to build your service
+  image: bitwalker/alpine-elixir-phoenix:latest
   artifacts:
     paths:
       - bin/
