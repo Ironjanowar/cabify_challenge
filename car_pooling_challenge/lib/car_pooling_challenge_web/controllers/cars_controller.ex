@@ -32,7 +32,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
           GroupAssigner.assign()
           conn |> send_resp(200, "")
         else
-          conn |> send_resp(400, "")
+          conn |> send_resp(400, "Some ids are repeated")
         end
     end
   end

@@ -69,10 +69,12 @@ defmodule CarPoolingChallenge.Group do
   def new(params) do
     group_changeset = Group.changeset(%Group{}, params)
 
-    if group_changeset.valid? do
-      Repo.insert(group_changeset)
+    with {:valid, true} <- {:valid, group_changeset.valid?},
+         {:ok, _group} = result <- Repo.insert(group_changeset) do
+      result
     else
-      {:error, :bad_params}
+      {:valid, false} -> {:error, :bad_params}
+      {:error, _} -> {:error, :id_exists}
     end
   end
 end

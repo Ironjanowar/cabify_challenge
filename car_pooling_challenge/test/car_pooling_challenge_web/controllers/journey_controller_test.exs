@@ -30,6 +30,18 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
       assert response =~ ""
     end
 
+    test "creation with a repeated group id", %{conn: conn} do
+      group = %{"id" => 1, "people" => 3}
+      Group.new(group)
+
+      response =
+        conn
+        |> post(Routes.journey_path(conn, :journey), group)
+        |> response(400)
+
+      assert response =~ "That id already exists"
+    end
+
     test "creation bad format", %{conn: conn} do
       group = %{"id" => 1}
 

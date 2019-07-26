@@ -17,6 +17,9 @@ defmodule CarPoolingChallengeWeb.JourneyController do
         GroupAssigner.assign()
         conn |> send_resp(200, "")
 
+      {:error, :id_exists} ->
+        conn |> send_resp(400, "That id already exists")
+
       {:error, :bad_params} ->
         conn |> send_resp(400, "")
     end
