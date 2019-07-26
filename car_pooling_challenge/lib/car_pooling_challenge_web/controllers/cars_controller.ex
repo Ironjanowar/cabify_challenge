@@ -2,8 +2,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
   use CarPoolingChallengeWeb, :controller
 
   alias CarPoolingChallenge.Car
-  alias CarPoolingChallenge.Group
-  alias CarPoolingChallenge.Repo
+  alias CarPoolingChallenge.GroupAssigner
 
   @doc """
 
@@ -14,38 +13,33 @@ defmodule CarPoolingChallengeWeb.CarsController do
   input is consedered invalid.
 
   """
-  def set_cars(conn, %{"_json" => cars}) do
-    with cars_changeset <- Enum.map(cars, &Car.changeset(%Car{}, &1)),
-         false <- Enum.map(cars_changeset, & &1.valid?) |> Enum.member?(false),
-         true <- ids_unique?(cars_changeset),
-         _ <- Repo.delete_all(Car),
-         nil <-
-           cars_changeset
-           |> Enum.map(&Repo.insert/1)
-           |> Enum.find(fn {status, _} -> status == :error end) do
-      # Check if there are any groups waiting
-      Group.assign_groups()
+  def set_cars(conn, %{"_json" => car_params}) do
+    check_params = fn car, acc ->
+      case Car.check_params(car) do
+        {:ok, car} -> {:cont, [car | acc]}
+        _ -> {:halt, :bad_params}
+      end
+    end
 
-      conn |> send_resp(200, "")
-    else
-      _ -> conn |> send_resp(400, "")
+    case Enum.reduce_while(car_params, [], check_params) do
+      :bad_params ->
+        conn |> send_resp(400, "")
+
+      car_changesets ->
+        if ids_unique?(car_changesets) do
+          Car.delete_all()
+          Car.insert_all(car_changesets)
+          GroupAssigner.assign()
+          conn |> send_resp(200, "")
+        else
+          conn |> send_resp(400, "")
+        end
     end
   end
 
   ## Utils
-  defp ids_unique?([id | rest]) when is_integer(id) do
-    if Enum.member?(rest, id) do
-      false
-    else
-      ids_unique?(rest)
-    end
-  end
-
-  defp ids_unique?([]), do: true
-
-  defp ids_unique?(cars_changeset) do
-    cars_changeset
-    |> Enum.map(& &1.changes.id)
-    |> ids_unique?()
+  defp ids_unique?(changesets) do
+    ids = Enum.map(changesets, & &1.changes.id)
+    length(ids) == ids |> Enum.uniq() |> length()
   end
 end

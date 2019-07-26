@@ -4,7 +4,6 @@ defmodule CarPoolingChallenge.Group do
   import Ecto.Query
 
   alias __MODULE__
-  alias CarPoolingChallenge.Car
   alias CarPoolingChallenge.Repo
 
   @primary_key {:id, :id, autogenerate: false}
@@ -27,15 +26,53 @@ defmodule CarPoolingChallenge.Group do
 
   @doc """
 
-  Checks the groups that are not in a car and tries to assign them to
-  one.
-
-  This function is usually called after a new '/cars' request.
+  Returns the unassigned groups ordered by the time they have been
+  waiting
 
   """
-  def assign_groups() do
+  def get_unassigned_groups() do
     q = from(g in Group, where: is_nil(g.car_id), order_by: [asc: g.inserted_at], preload: [:car])
+    q |> Repo.all()
+  end
 
-    q |> Repo.all() |> Enum.each(&Car.assign_car/1)
+  @doc """
+
+  Takes a group id and returns that group if it exists in the
+  database.
+
+  """
+  def get(id) do
+    q = from(g in Group, where: g.id == ^id, preload: [:car])
+
+    case q |> Repo.one() do
+      nil -> {:error, :group_not_found}
+      group -> {:ok, group}
+    end
+  end
+
+  @doc """
+
+  Deletes a given group from the database.
+
+  """
+  def delete(group) do
+    Repo.delete(group)
+  end
+
+  @doc """
+
+  Creates a new group in the database. The function takes a map with
+  an id and a number of people, validates the data and inserts the new
+  group.
+
+  """
+  def new(params) do
+    group_changeset = Group.changeset(%Group{}, params)
+
+    if group_changeset.valid? do
+      Repo.insert(group_changeset)
+    else
+      {:error, :bad_params}
+    end
   end
 end

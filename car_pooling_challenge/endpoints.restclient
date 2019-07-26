@@ -47,6 +47,6 @@ POST http://:host/dropoff?ID=2
 Content-Type: application/x-www-form-urlencoded
 
 # POST /locate
-POST http://:host/locate?ID=2
+POST http://:host/locate?ID=3
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json

@@ -36,19 +36,84 @@ defmodule CarPoolingChallenge.Car do
       from(c in Car,
         where: c.free_seats >= ^group.people,
         order_by: [asc: c.free_seats - ^group.people],
-        preload: [:groups]
+        preload: [:groups],
+        limit: 1
       )
 
     case Repo.all(query) do
-      [car | _] ->
+      [] ->
+        :no_car
+
+      [car] ->
         Ecto.Changeset.change(car,
           groups: [group | car.groups],
           free_seats: car.free_seats - group.people
         )
         |> Repo.update()
-
-      _ ->
-        :no_car
     end
+  end
+
+  @doc """
+
+  Check if given params are valid to create a car.
+
+  """
+  def check_params(params) do
+    car_changeset = Car.changeset(%Car{}, params)
+
+    if car_changeset.valid? do
+      {:ok, car_changeset}
+    else
+      {:error, :bad_params}
+    end
+  end
+
+  @doc """
+
+  Creates a new car with given changeset.
+
+  """
+  def insert(changeset), do: Repo.insert(changeset)
+
+  @doc """
+
+  Takes a car id and returns that car if it exists in the
+  database.
+
+  """
+  def get(id) do
+    q = from(c in Car, where: c.id == ^id, preload: [:groups])
+
+    case q |> Repo.one() do
+      nil -> {:error, :car_not_found}
+      car -> {:ok, car}
+    end
+  end
+
+  @doc """
+
+  Receives a car and the number of seats to be freed and updates the
+  car on the database.
+
+  """
+  def free_seats(car, seats) do
+    changeset = Ecto.Changeset.change(car, free_seats: car.free_seats + seats)
+    Repo.update(changeset)
+  end
+
+  @doc """
+
+  Deletes all cars
+
+  """
+  def delete_all() do
+    Repo.delete_all(Car)
+  end
+
+  @doc """
+  Creates new cars from a list of changesets
+  """
+  def insert_all(changesets) do
+    Enum.each(changesets, &Car.insert/1)
   end
 end

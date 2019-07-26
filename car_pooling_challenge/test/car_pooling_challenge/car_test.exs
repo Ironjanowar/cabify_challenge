@@ -1,15 +1,8 @@
 defmodule CarPoolingChallenge.CarTest do
-  use ExUnit.Case
-
-  import Ecto.Query
+  use CarPoolingChallenge.DataCase
 
   alias CarPoolingChallenge.Car
-  alias CarPoolingChallenge.Group
   alias CarPoolingChallenge.Repo
-
-  setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CarPoolingChallenge.Repo)
-  end
 
   describe "cars" do
     test "Creates a car with valid data" do
@@ -33,21 +26,14 @@ defmodule CarPoolingChallenge.CarTest do
       refute car.valid?
     end
 
-    test "Assigns a car to a group" do
+    test "Gets a car" do
       valid_data = %{id: 1, seats: 4}
-      car_changeset = Repo.preload(%Car{}, :groups) |> Car.changeset(valid_data)
+      car_changeset = Car.changeset(%Car{}, valid_data)
       {:ok, car} = Repo.insert(car_changeset)
-      group = %Group{id: 1, people: 3}
-      Car.assign_car(group)
 
-      q = from(c in Car, where: c.id == ^car.id, preload: [:groups])
-      inserted_car = Repo.one(q)
+      result = Car.get(car.id)
 
-      keys = [:id, :people]
-
-      inserted_group = inserted_car.groups |> Enum.find(fn g -> g.id == group.id end)
-
-      assert Map.take(inserted_group, keys) == Map.take(group, keys)
+      assert elem(result, 0) == :ok
     end
   end
 end
