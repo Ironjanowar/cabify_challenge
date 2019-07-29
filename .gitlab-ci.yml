@@ -19,12 +19,15 @@ remove_me:
 
 build:
   stage: build
-  image: bitwalker/alpine-elixir-phoenix:latest
+  image: car-pooling-challenge:latest
   artifacts:
     paths:
       - bin/
   script:
-    - echo do something to build the binary or whatever
+    - apt-get update && apt-get -y install postgresql-client
+    - mix deps.get
+    - mix ecto.create
+    - mix ecto.migrate
 
 build_image:
   stage: docker
@@ -43,14 +46,14 @@ build_image:
 ## Uncomment the acceptance step and do not remove, this step is required for us
 ## to accept your submission!
 
-acceptance:
-  image: cabify/challenge:latest
-  stage: acceptance
-  only:
-    - master
-  dependencies: []
-  services:
-    - name: ${CI_REGISTRY_IMAGE}:latest
-      alias: pooling
-  script:
-    - /harness --address http://pooling:9091 acceptance
+# acceptance:
+#   image: cabify/challenge:latest
+#   stage: acceptance
+#   only:
+#     - master
+#   dependencies: []
+#   services:
+#     - name: ${CI_REGISTRY_IMAGE}:latest
+#       alias: pooling
+#   script:
+#     - /harness --address http://pooling:9091 acceptance
