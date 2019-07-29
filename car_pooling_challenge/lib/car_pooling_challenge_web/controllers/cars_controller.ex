@@ -1,6 +1,8 @@
 defmodule CarPoolingChallengeWeb.CarsController do
   use CarPoolingChallengeWeb, :controller
 
+  import Plug.Conn
+
   alias CarPoolingChallenge.Car
   alias CarPoolingChallenge.GroupAssigner
 
@@ -34,6 +36,13 @@ defmodule CarPoolingChallengeWeb.CarsController do
         else
           conn |> send_resp(400, "Some ids are repeated")
         end
+    end
+  end
+
+  def set_cars(conn, _) do
+    case conn |> get_req_header("content-type") do
+      ["application/json"] -> conn |> send_resp(400, "")
+      _ -> conn |> send_resp(400, "Content-Type should be 'application/json'")
     end
   end
 

@@ -1,5 +1,6 @@
 defmodule CarPoolingChallengeWeb.CarsControllerTest do
   use CarPoolingChallengeWeb.ConnCase
+  use Plug.Test
 
   setup do
     Ecto.Adapters.SQL.Sandbox.mode(CarPoolingChallenge.Repo, {:shared, self()})
