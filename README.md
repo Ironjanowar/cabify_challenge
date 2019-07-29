@@ -52,7 +52,7 @@ Responses:
 ### PUT /cars
 
 Load the list of available cars in the service and remove all previous data
-(existing journeys and cars). This method may be called more than once during 
+(existing journeys and cars). This method may be called more than once during
 the life cycle of the service.
 
 **Body** _required_ The list of cars to load.
