@@ -10,6 +10,8 @@ EXPOSE 9091
 ENV MIX_ENV=prod
 ENV DATABASE_URL=ecto://postgres:postgres@localhost/car_pooling_challenge
 
+RUN apk add postgresql
+
 # Install hex
 RUN mix local.hex --force
 
