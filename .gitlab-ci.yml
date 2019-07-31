@@ -39,5 +39,8 @@ acceptance:
   services:
     - name: ${CI_REGISTRY_IMAGE}:latest
       alias: pooling
+      ports:
+        - "9091:9091"
+
   script:
     - /harness --address http://pooling:9091 acceptance

@@ -23,7 +23,9 @@ WORKDIR /app
 ENV SECRET_KEY_BASE="$(mix phx.gen.secret)"
 RUN mix deps.get
 RUN mix deps.compile
+RUN mix compile
 
-RUN mix release
+# RUN mix release
 
-ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
+# ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
+ENTRYPOINT [ "mix", "phx.server"]
