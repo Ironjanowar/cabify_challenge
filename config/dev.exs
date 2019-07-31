@@ -1,13 +1,5 @@
 use Mix.Config
 
-config :car_pooling_challenge, CarPoolingChallenge.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "car_pooling_challenge_dev",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 config :car_pooling_challenge, CarPoolingChallengeWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,

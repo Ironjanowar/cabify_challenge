@@ -25,6 +25,7 @@ defmodule CarPoolingChallenge.Model.Car do
   Checks if a given map is a valid Car
 
   """
+  @spec changeset(map()) :: Ecto.Changeset.t(Car.t())
   def changeset(attrs) do
     {%Car{}, type()}
     |> cast(attrs, [:id, :seats])
@@ -38,26 +39,8 @@ defmodule CarPoolingChallenge.Model.Car do
   Receives a list of car changesets to insert them all
 
   """
-  def insert_all(cars) do
-    MemoryDatabase.insert(cars)
-  end
-
-  @doc """
-
-  Checks if a given map is a valid car and inserts it
-
-  """
-  def new(attrs) do
-    changeset = changeset(attrs)
-
-    if changeset.valid? do
-      changeset
-      |> Ecto.Changeset.apply_changes()
-      |> MemoryDatabase.insert()
-    else
-      {:error, :bad_params}
-    end
-  end
+  @spec insert_all([Car.t()]) :: {:ok, [Car.t()]}
+  def insert_all(cars), do: MemoryDatabase.insert(cars)
 
   @doc """
 
@@ -73,6 +56,7 @@ defmodule CarPoolingChallenge.Model.Car do
   generated with its attributes
 
   """
+  @spec check_params(map()) :: {:ok, Car.t()} | {:error, :bad_params}
   def check_params(car) do
     changeset = changeset(car)
 
@@ -89,6 +73,7 @@ defmodule CarPoolingChallenge.Model.Car do
   in ascending order by free seats.
 
   """
+  @spec get_free_cars() :: [Car.t()]
   def get_free_cars(), do: MemoryDatabase.get_free_cars()
 
   @doc """

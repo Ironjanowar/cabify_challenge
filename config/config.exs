@@ -1,9 +1,6 @@
 # General application configuration
 use Mix.Config
 
-config :car_pooling_challenge,
-  ecto_repos: [CarPoolingChallenge.Repo]
-
 # Configures the endpoint
 config :car_pooling_challenge, CarPoolingChallengeWeb.Endpoint,
   url: [host: "localhost"],

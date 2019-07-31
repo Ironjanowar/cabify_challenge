@@ -1,6 +1,4 @@
 defmodule CarPoolingChallenge.GroupTest do
-  use CarPoolingChallenge.DataCase
-
   alias CarPoolingChallenge.Group
 
   describe "groups" do

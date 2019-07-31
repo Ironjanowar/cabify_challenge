@@ -71,10 +71,10 @@ defmodule CarPoolingChallenge.MemoryDatabase do
     new_groups =
       Enum.filter(groups, fn {_, group} -> group.car_id |> is_nil end) |> Enum.into(%{})
 
-    cars = Enum.map(cars, fn car -> {car.id, car} end) |> Enum.into(%{})
+    cars_map = Enum.map(cars, fn car -> {car.id, car} end) |> Enum.into(%{})
 
     # Remove all the cars
-    new_state = %{cars: cars, groups: new_groups}
+    new_state = %{cars: cars_map, groups: new_groups}
     {:reply, {:ok, cars}, new_state}
   end
 

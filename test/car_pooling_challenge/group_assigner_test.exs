@@ -1,6 +1,4 @@
 defmodule CarPoolingChallenge.GroupAssignerTest do
-  use CarPoolingChallenge.DataCase
-
   alias CarPoolingChallenge.GroupAssigner
   alias CarPoolingChallenge.Group
   alias CarPoolingChallenge.Car

@@ -2,10 +2,6 @@ defmodule CarPoolingChallengeWeb.CarsControllerTest do
   use CarPoolingChallengeWeb.ConnCase
   use Plug.Test
 
-  setup do
-    Ecto.Adapters.SQL.Sandbox.mode(CarPoolingChallenge.Repo, {:shared, self()})
-  end
-
   test "Creates a list of cars and delete all the previous cars", %{conn: conn} do
     cars = [
       %{"id" => 1, "seats" => 6},
