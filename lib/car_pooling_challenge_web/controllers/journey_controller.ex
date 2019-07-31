@@ -1,9 +1,8 @@
 defmodule CarPoolingChallengeWeb.JourneyController do
   use CarPoolingChallengeWeb, :controller
 
-  alias CarPoolingChallenge.Group
+  alias CarPoolingChallenge.Model.Group
   alias CarPoolingChallenge.GroupAssigner
-  alias CarPoolingChallenge.Car
 
   @doc """
 
@@ -35,19 +34,13 @@ defmodule CarPoolingChallengeWeb.JourneyController do
   """
   def dropoff(conn, params) do
     with id when not is_nil(id) <- params["ID"],
-         {:ok, group} <- Group.get(id),
-         _ = Group.delete(group),
-         {:car, car_id} when not is_nil(car_id) <- {:car, group.car_id},
-         {:ok, car} <- Car.get(car_id) do
-      Car.free_seats(car, group.people)
+         {:ok, _group} <- GroupAssigner.dropoff(id) do
       GroupAssigner.assign()
 
       conn |> send_resp(200, "")
     else
-      {:car, _} -> conn |> send_resp(200, "")
-      {:error, :car_not_found} -> conn |> send_resp(200, "")
-      {:error, :group_not_found} -> conn |> send_resp(404, "")
-      err -> conn |> send_resp(400, "")
+      {:error, :not_found} -> conn |> send_resp(404, "Group not found")
+      _ -> conn |> send_resp(400, "")
     end
   end
 

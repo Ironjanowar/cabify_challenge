@@ -3,7 +3,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
 
   import Plug.Conn
 
-  alias CarPoolingChallenge.Car
+  alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.GroupAssigner
 
   @doc """
@@ -29,7 +29,6 @@ defmodule CarPoolingChallengeWeb.CarsController do
 
       car_changesets ->
         if ids_unique?(car_changesets) do
-          Car.delete_all()
           Car.insert_all(car_changesets)
           GroupAssigner.assign()
           conn |> send_resp(200, "")
@@ -48,7 +47,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
 
   ## Utils
   defp ids_unique?(changesets) do
-    ids = Enum.map(changesets, & &1.changes.id)
+    ids = Enum.map(changesets, & &1.id)
     length(ids) == ids |> Enum.uniq() |> length()
   end
 end
