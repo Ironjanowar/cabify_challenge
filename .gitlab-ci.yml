@@ -1,5 +1,6 @@
 ---
 stages:
+  - docker
   - acceptance
 
 ## Uncomment the following sections to enable docker, image building and acceptance
@@ -13,29 +14,30 @@ stages:
 #   script:
 #     - echo do something to build the binary or whatever
 
-# build_image:
-#   stage: docker
-#   image: docker:latest
-#   variables:
-#     DOCKER_HOST: tcp://docker:2375/
-#     DOCKER_DRIVER: overlay2
-#   services:
-#     - docker:dind
-#   script:
-#     - echo ${CI_JOB_TOKEN} | docker login --password-stdin -u ${CI_REGISTRY_USER} ${CI_REGISTRY}
-#     - docker build . -t ${CI_REGISTRY_IMAGE}:latest
-#     - docker push ${CI_REGISTRY_IMAGE}:latest
+build_image:
+  stage: docker
+  image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:dind
+  script:
+    - echo ${CI_JOB_TOKEN} | docker login --password-stdin -u ${CI_REGISTRY_USER} ${CI_REGISTRY}
+    - docker build . -t ${CI_REGISTRY_IMAGE}:latest
+    - docker push ${CI_REGISTRY_IMAGE}:latest
 
 ## Uncomment the acceptance step and do not remove, this step is required for us
 ## to accept your submission!
 
 acceptance:
-  image: tmaier/docker-compose:latest
+  image: cabify/challenge:latest
   stage: acceptance
+  only:
+    - master
+  dependencies: []
   services:
-    - docker:dind
-  before_script:
-    - docker info
-    - docker-compose --version
+    - name: ${CI_REGISTRY_IMAGE}:latest
+      alias: pooling
   script:
-    - docker-compose up --exit-code-from acceptance --abort-on-container-exit
+    - /harness --address http://pooling:9091 acceptance
