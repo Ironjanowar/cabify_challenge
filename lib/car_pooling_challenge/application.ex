@@ -5,7 +5,7 @@ defmodule CarPoolingChallenge.Application do
 
   def start(_type, _args) do
     children = [
-      CarPoolingChallenge.Repo,
+      CarPoolingChallenge.MemoryDatabase,
       CarPoolingChallengeWeb.Endpoint
     ]
 

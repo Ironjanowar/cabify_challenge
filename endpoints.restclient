@@ -35,8 +35,8 @@ Content-Type: application/json
 
 [
   {
-    "id": 3,
-    "seats": 2
+    "id": 1,
+    "seats": 4
   }
 ]
 
@@ -45,8 +45,8 @@ POST http://:host/journey
 Content-Type: application/json
 
 {
-  "id": 3,
-  "people": 5
+  "id": 4,
+  "people": 6
 }
 
 # POST /dropoff
@@ -54,6 +54,6 @@ POST http://:host/dropoff?ID=3
 Content-Type: application/x-www-form-urlencoded
 
 # POST /locate
-POST http://:host/locate?ID=3
+POST http://:host/locate?ID=4
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
