@@ -7,6 +7,9 @@ GET http://:docker/status
 # GET /status
 GET http://:host/status
 
+# GET method not allowed
+PUT http://:host/status
+
 # PUT /cars
 PUT http://:host/cars
 Content-Type: application/json
@@ -47,7 +50,7 @@ Content-Type: application/json
 }
 
 # POST /dropoff
-POST http://:host/dropoff?ID=2
+POST http://:host/dropoff?ID=3
 Content-Type: application/x-www-form-urlencoded
 
 # POST /locate

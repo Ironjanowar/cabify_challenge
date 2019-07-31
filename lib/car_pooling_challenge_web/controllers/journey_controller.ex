@@ -44,9 +44,10 @@ defmodule CarPoolingChallengeWeb.JourneyController do
 
       conn |> send_resp(200, "")
     else
+      {:car, _} -> conn |> send_resp(200, "")
       {:error, :car_not_found} -> conn |> send_resp(200, "")
       {:error, :group_not_found} -> conn |> send_resp(404, "")
-      _ -> conn |> send_resp(400, "")
+      err -> conn |> send_resp(400, "")
     end
   end
 

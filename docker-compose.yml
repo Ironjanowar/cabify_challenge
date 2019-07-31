@@ -10,9 +10,19 @@ services:
       - POSTGRES_PASSWORD=postgres
   pooling:
     build: .
+    restart: always
     ports:
       - "9091:9091"
     depends_on:
       - "postgres"
     entrypoint:
       - ./entrypoint.sh
+  acceptance:
+    image: cabify/challenge:latest
+    depends_on:
+      - "pooling"
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - sleep 10; /harness --address http://pooling:9091 acceptance

@@ -30,15 +30,12 @@ stages:
 ## to accept your submission!
 
 acceptance:
-  image: cabify/challenge:latest
+  image: tmaier/docker-compose:latest
   stage: acceptance
-  only:
-    - master
-  dependencies: []
+  services:
+    - docker:dind
   before_script:
-    - apk add --no-cache py-pip
-    - pip install docker-compose
-    - docker-compose build
+    - docker info
+    - docker-compose --version
   script:
-    - docker-compose up -d
-    - /harness --address http://pooling:9091 acceptance
+    - docker-compose up --exit-code-from acceptance --abort-on-container-exit
