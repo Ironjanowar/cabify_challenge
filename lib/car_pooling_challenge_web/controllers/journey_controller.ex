@@ -2,6 +2,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
   use CarPoolingChallengeWeb, :controller
 
   alias CarPoolingChallenge.Model.Group
+  alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.GroupAssigner
 
   @doc """
@@ -34,6 +35,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
   """
   def dropoff(conn, params) do
     with id when not is_nil(id) <- params["ID"],
+         id <- String.to_integer(id),
          {:ok, _group} <- GroupAssigner.dropoff(id) do
       GroupAssigner.assign()
 
@@ -52,15 +54,24 @@ defmodule CarPoolingChallengeWeb.JourneyController do
 
   """
   def locate(conn, params) do
-    with {:param, {:ok, id}} <- {:param, Map.fetch(params, "ID")},
+    with {:param, id} when not is_nil(id) <- {:param, params["ID"]},
+         id <- String.to_integer(id),
          {:ok, group} <- Group.get(id),
-         {:car, car} when not is_nil(car) <- {:car, Map.get(group, :car)} do
+         {:car, {:ok, car}} <- {:car, Car.get(group.car_id)} do
       conn |> render("car.json", %{car: car})
     else
-      {:param, _} -> conn |> send_resp(400, "")
-      {:error, :group_not_found} -> conn |> send_resp(404, "")
-      {:car, _} -> conn |> send_resp(204, "")
-      _ -> conn |> send_resp(500, "")
+      {:param, _} ->
+        conn |> send_resp(400, "")
+
+      {:error, :not_found} ->
+        conn |> send_resp(404, "Group not found")
+
+      {:car, _} ->
+        conn |> send_resp(204, "")
+
+      err ->
+        IO.inspect(err)
+        conn |> send_resp(500, "")
     end
   end
 end

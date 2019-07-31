@@ -31,6 +31,10 @@ defmodule CarPoolingChallenge.MemoryDatabase do
     GenServer.call(__MODULE__, :get_unassigned_groups)
   end
 
+  def get_car(id) do
+    GenServer.call(__MODULE__, {:get_car, id})
+  end
+
   def get_free_cars() do
     GenServer.call(__MODULE__, :get_free_cars)
   end
@@ -82,8 +86,6 @@ defmodule CarPoolingChallenge.MemoryDatabase do
   end
 
   def handle_call({:delete_group, id}, _from, state) do
-    id = String.to_integer(id)
-
     case pop_in(state, [:groups, id]) do
       {nil, _} -> {:reply, {:error, :not_found}, state}
       {group, new_state} -> {:reply, {:ok, group}, new_state}
@@ -93,10 +95,17 @@ defmodule CarPoolingChallenge.MemoryDatabase do
   def handle_call(:get_unassigned_groups, _from, %{groups: groups} = state) do
     unassigned_groups =
       Enum.filter(groups, fn {_, group} -> group.car_id |> is_nil end)
-      |> Enum.sort_by(fn {_, group} -> group.inserted_at end)
+      |> Enum.sort_by(fn {_, group} -> group.inserted_at |> DateTime.to_unix() end)
       |> Enum.map(&elem(&1, 1))
 
     {:reply, unassigned_groups, state}
+  end
+
+  def handle_call({:get_car, id}, _from, state) do
+    case get_in(state, [:cars, id]) do
+      nil -> {:reply, {:error, :not_found}, state}
+      car -> {:reply, {:ok, car}, state}
+    end
   end
 
   def handle_call(:get_free_cars, _from, %{cars: cars} = state) do

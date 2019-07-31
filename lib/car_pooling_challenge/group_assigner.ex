@@ -2,9 +2,9 @@ defmodule CarPoolingChallenge.GroupAssigner do
   alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.Model.Group
 
-  defp assign_car(cars, group) do
+  defp assign_car(group) do
     car =
-      cars
+      Car.get_free_cars()
       |> Enum.filter(fn car -> car.free_seats >= group.people end)
       |> Enum.sort_by(fn car -> car.free_seats - group.people end)
       |> Enum.take(1)
@@ -47,8 +47,7 @@ defmodule CarPoolingChallenge.GroupAssigner do
   def assign() do
     Task.async(fn ->
       groups = Group.get_unassigned_groups()
-      cars = Car.get_free_cars()
-      Enum.each(groups, &assign_car(cars, &1))
+      Enum.each(groups, &assign_car/1)
     end)
   end
 end

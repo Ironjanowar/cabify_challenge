@@ -61,6 +61,14 @@ defmodule CarPoolingChallenge.Model.Car do
 
   @doc """
 
+  Gets a car by id
+
+  """
+  @spec get(integer()) :: {:ok, Car.t()} | {:error, :not_found}
+  def get(id), do: MemoryDatabase.get_car(id)
+
+  @doc """
+
   Checks if a given map is a car and returns the struct that is
   generated with its attributes
 
