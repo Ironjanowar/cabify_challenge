@@ -8,7 +8,7 @@ FROM bitwalker/alpine-elixir:1.9.0
 EXPOSE 9091
 
 ENV MIX_ENV=prod
-ENV DATABASE_URL=ecto://postgres:postgres@postgres/car_pooling_challenge
+ENV DATABASE_URL="ecto://postgres:postgres@postgres/car_pooling_challenge"
 
 # Install hex
 RUN mix local.hex --force
@@ -25,6 +25,9 @@ WORKDIR /app
 
 ENV SECRET_KEY_BASE="$(mix phx.gen.secret)"
 RUN mix deps.get
-RUN mix release
+RUN mix deps.compile
+# RUN mix ecto.setup
+# RUN until mix ecto.setup; do echo "Trying to setup database"; done
+# RUN mix release
 
-ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
+# ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]

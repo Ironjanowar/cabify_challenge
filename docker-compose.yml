@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  postgres:
+    image: "postgres:latest"
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_DB=car_pooling_challenge
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  pooling:
+    build: .
+    ports:
+      - "9091:9091"
+    depends_on:
+      - "postgres"
+    entrypoint:
+      - ./entrypoint.sh
