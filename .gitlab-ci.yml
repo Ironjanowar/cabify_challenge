@@ -30,14 +30,16 @@ build_image:
 ## Uncomment the acceptance step and do not remove, this step is required for us
 ## to accept your submission!
 
+  # services:
+  #   - name: ${CI_REGISTRY_IMAGE}:latest
+  #     alias: pooling
+
 acceptance:
   image: cabify/challenge:latest
   stage: acceptance
   only:
     - master
   dependencies: []
-  services:
-    - name: ${CI_REGISTRY_IMAGE}:latest
-      alias: pooling
   script:
-    - /harness --address http://pooling:9091 acceptance
+    - docker run -p 9091:9091 ${CI_REGISTRY_IMAGE}:latest
+    - /harness --address http://localhost:9091 acceptance
