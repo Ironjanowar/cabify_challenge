@@ -29,7 +29,7 @@ acceptance:
   stage: acceptance
   script:
     - echo ${CI_JOB_TOKEN} | docker login --password-stdin -u ${CI_REGISTRY_USER} ${CI_REGISTRY}
-    - docker-compose up --abort-on-container-exit --exit-code-from harness
+    - docker-compose up --abort-on-container-exit --exit-code-from acceptance
 
 
 ---
