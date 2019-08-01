@@ -3,9 +3,6 @@
 # Change workdir
 cd /app
 
-# Set up database
-mix ecto.setup
-
 # Create release
 # mix release
 

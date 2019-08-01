@@ -5,8 +5,6 @@ services:
     restart: always
     ports:
       - "9091:9091"
-    depends_on:
-      - "postgres"
     entrypoint:
       - ./entrypoint.sh
   acceptance:
