@@ -15,6 +15,8 @@ defmodule CarPoolingChallengeWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias CarPoolingChallenge.MemoryDatabase
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -27,6 +29,9 @@ defmodule CarPoolingChallengeWeb.ConnCase do
   end
 
   setup _tags do
+    # Reset the initial state of memory database on every test
+    :sys.replace_state(MemoryDatabase, fn _ -> %{cars: %{}, groups: %{}} end)
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

@@ -1,5 +1,5 @@
 defmodule CarPoolingChallengeWeb.ErrorViewTest do
-  use CarPoolingChallengeWeb.ConnCase, async: true
+  use CarPoolingChallengeWeb.ConnCase
 
   # Bring render/3 and render_to_string/3 for testing custom views
   import Phoenix.View
@@ -9,6 +9,7 @@ defmodule CarPoolingChallengeWeb.ErrorViewTest do
   end
 
   test "renders 500.html" do
-    assert render_to_string(CarPoolingChallengeWeb.ErrorView, "500.html", []) == "Internal Server Error"
+    assert render_to_string(CarPoolingChallengeWeb.ErrorView, "500.html", []) ==
+             "Internal Server Error"
   end
 end

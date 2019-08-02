@@ -1,14 +1,16 @@
 defmodule CarPoolingChallenge.GroupAssignerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   alias CarPoolingChallenge.GroupAssigner
   alias CarPoolingChallenge.MemoryDatabase
   alias CarPoolingChallenge.Model.Group
   alias CarPoolingChallenge.Model.Car
 
-  test "Assigns groups to new cars" do
-    MemoryDatabase.start_link()
+  setup do
+    :sys.replace_state(MemoryDatabase, fn _ -> %{cars: %{}, groups: %{}} end)
+  end
 
+  test "Assigns groups to new cars" do
     cars = [
       %{"id" => 1, "seats" => 6},
       %{"id" => 2, "seats" => 5},

@@ -1,10 +1,14 @@
 defmodule CarPoolingChallenge.CarTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.Model.Group
   alias CarPoolingChallenge.MemoryDatabase
   alias CarPoolingChallenge.GroupAssigner
+
+  setup do
+    :sys.replace_state(MemoryDatabase, fn _ -> %{cars: %{}, groups: %{}} end)
+  end
 
   describe "cars" do
     test "Creates a car with valid data" do
@@ -29,8 +33,6 @@ defmodule CarPoolingChallenge.CarTest do
     end
 
     test "Inserts a car" do
-      MemoryDatabase.start_link()
-
       valid_data = %{"id" => 1, "seats" => 4}
       {:ok, car} = Car.check_params(valid_data)
       {:ok, [inserted_car]} = Car.insert_all([car])
@@ -39,8 +41,6 @@ defmodule CarPoolingChallenge.CarTest do
     end
 
     test "Gets a car" do
-      MemoryDatabase.start_link()
-
       valid_data = %{"id" => 1, "seats" => 4}
       {:ok, car} = Car.check_params(valid_data)
       Car.insert_all([car])
@@ -51,8 +51,6 @@ defmodule CarPoolingChallenge.CarTest do
     end
 
     test "Get free cars" do
-      MemoryDatabase.start_link()
-
       cars =
         [%{"id" => 1, "seats" => 4}, %{"id" => 2, "seats" => 5}]
         |> Enum.map(fn car -> Car.check_params(car) |> elem(1) end)
@@ -68,8 +66,6 @@ defmodule CarPoolingChallenge.CarTest do
     end
 
     test "Free a number of seats" do
-      MemoryDatabase.start_link()
-
       valid_data = %{"id" => 1, "seats" => 4}
       {:ok, car} = Car.check_params(valid_data)
       Car.insert_all([car])

@@ -4,12 +4,9 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
   alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.Model.Group
   alias CarPoolingChallenge.GroupAssigner
-  alias CarPoolingChallenge.MemoryDatabase
 
   describe "Journey" do
     test "creation and assign the group of people to a car", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       {:ok, car} = %{"id" => 1, "seats" => 6} |> Car.check_params()
       Car.insert_all([car])
 
@@ -24,8 +21,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "creation without assigning the group of people to a car", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       group = %{"id" => 1, "people" => 3}
 
       response =
@@ -37,8 +32,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "creation with a repeated group id", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       group = %{"id" => 1, "people" => 3}
       Group.new(group)
 
@@ -51,8 +44,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "creation bad format", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       group = %{"id" => 1}
 
       response =
@@ -64,8 +55,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "creation with people out of range", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       group = %{"id" => 1, "people" => 8}
 
       response =
@@ -79,8 +68,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
 
   describe "Dropoff" do
     test "a group in a journey", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       {:ok, car} = %{"id" => 3, "seats" => 6} |> Car.check_params()
       Car.insert_all([car])
 
@@ -98,8 +85,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "a non existing group", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       dropoff = %{"ID" => "2"}
 
       response =
@@ -111,8 +96,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "with a bad format", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       dropoff = %{}
       response = conn |> post(Routes.journey_path(conn, :dropoff), dropoff) |> response(400)
 
@@ -122,8 +105,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
 
   describe "Locate" do
     test "a group in a car", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       {:ok, car} = %{"id" => 2, "seats" => 6} |> Car.check_params()
       Car.insert_all([car])
 
@@ -142,8 +123,6 @@ defmodule CarPoolingChallengeWeb.JourneyControllerTest do
     end
 
     test "a group waiting for a car", %{conn: conn} do
-      MemoryDatabase.start_link()
-
       {:ok, group} = %{"id" => 4, "people" => 3} |> Group.new()
 
       locate = %{"ID" => to_string(group.id)}
