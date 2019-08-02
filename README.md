@@ -153,3 +153,83 @@ dependencies, but please document these decisions using MRs or in this very
 README adding sections to it, the same way you would be generating
 documentation for any other deliverable. We want to see how you operate in a
 quasi real work environment.
+
+# Solution
+
+## About the repository
+
+The main solution is in the `master` branch, there is a `database`
+branch with a version of the solution using PostgreSQL. I had to do
+this because I needed `docker-compose` in order to deploy correctly
+the application using `gitlab-ci`, but I wanted to keep it simple so I
+decided to develop a "memory database" version that uses a `GenServer`
+to store the state of the application.
+
+## Why Phoenix?
+
+I decided to use the Phoneix framework to create the API. It gives
+useful generated code for the Endpoint, Router, Controller and
+Views. It also provides a known structure of modules, so anyone that
+knows Phoenix will understand this solution (at least the non-logic
+related).
+
+## Config
+
+The config is pretty much standard except for:
+ - Default port changed to 9091 on `prod`.
+ - Server was set to true in `CarPoolingChallengeWeb.Endpoint` so the
+   release works.
+
+## Thought process
+
+In the application will exist two entities:
+  - **Cars**: that have three attributes:
+    + _id_: Unique identifier of a car
+    + _seats_: Seats that the car has
+    + _free\_seats_: Seats that are not occupied
+  - **Groups**: that have three attributes also:
+    + _id_: Unique identifier of a group
+    + _people_: Amount of people of the group
+    + _car\_id_: Id of the car where this group is located or `nil` if
+      they are waiting for a car
+    + _inserted\_at_: A `DateTime` with the time when the group was
+      inserted
+
+There is a `GroupAssigner` module that is in charge of assign cars to
+groups via an async `Task`, this module is going to be called every
+time there is a `/cars`, `/journey` or `/dropoff` request. It would
+get the groups ordered by "waiting time" so the groups that have been
+longer time waiting are assigned first.
+
+There is also a `MemoryDatabase` module that is a `GenServer`, it
+manages the state of the application. The internal state of the
+`GenServer` consist of a map of maps with a format like the one below:
+```elixir
+%{
+  cars: %{
+    1 => %CarPoolingChallenge.Model.Car{
+        id: 1,
+        seats: 4,
+        free_seats: 2
+    }
+  },
+  groups: %{
+    1 => %CarPoolingChallenge.Model.Group{
+      id: 1,
+      people: 2,
+      car_id: 1,
+      inserted_at: ~U[2019-08-02 18:05:18.565200Z]
+    }
+  }
+}
+```
+
+I used maps insead of lists because searching several times for groups
+and cars in a list would be a lot less efficient.
+
+## Modules
+
+### Application
+
+Starts up the app and the `CarPoolingChallenge.MemoryDatabase` module,
+which is in charge of storing the state of the application.
