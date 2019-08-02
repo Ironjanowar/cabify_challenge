@@ -5,8 +5,6 @@ FROM bitwalker/alpine-elixir:1.9.0
 
 EXPOSE 9091
 
-ENV MIX_ENV=prod
-
 # Install hex
 RUN mix local.hex --force
 
@@ -20,12 +18,13 @@ RUN mkdir /app
 COPY . /app
 WORKDIR /app
 
+ENV MIX_ENV=prod
 ENV SECRET_KEY_BASE="$(mix phx.gen.secret)"
 RUN mix deps.get
 RUN mix deps.compile
 RUN mix compile
 
-# RUN mix release
+RUN mix release
+RUN ls /app/_build
 
-# ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
-ENTRYPOINT [ "mix", "phx.server"]
+ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
