@@ -227,9 +227,62 @@ manages the state of the application. The internal state of the
 I used maps insead of lists because searching several times for groups
 and cars in a list would be a lot less efficient.
 
+The cars and groups are always removed when not needed. In a
+production service it may be useful to store all the data, but since
+this is a challenge and it will complicate the solution, all data is
+deleted. Also, to store the data I will create another table for each
+entity (for analysis only) creating a primary key with the id and the
+current time, in order to store multiple cars or groups with the same
+id in different timestamps.
+
 ## Modules
 
-### Application
+### CarPoolingChallenge.Application
 
 Starts up the app and the `CarPoolingChallenge.MemoryDatabase` module,
 which is in charge of storing the state of the application.
+
+### CarPoolingChallenge.Model.Car
+
+Defines the struct of a car with the attributes shown in the **Thought
+process** section. Has several functions:
+  - _changeset(attrs)_: Uses `Ecto` to validate the format of `atttrs`
+      and check if a valid car can be created.
+  - _insert\_all(cars)_: Receives a list of `cars`, deletes all the
+    existing cars and inserts the given `cars` in the storage calling
+    `CarPoolingChallenge.MemoryDatabase` module.
+  - _get(id)_: Receives an id and calls
+    `CarPoolingChallenge.MemoryDatabase` to get it from the storage.
+  - _check\_params(car)_: Receives a map and tries to create a car
+    from it checking the parameters with `&changeset/1` and applying
+    the changes if the result changeset is valid.
+  - _get\_free\_cars()_: Gets all the cars that have one or more seats
+    available.
+  - _free\_seats(car\_id, people)_: Free a given number of seats
+    (`people`) from a car (`car_id`).
+
+### CarPoolingChallenge.Model.Group
+
+Defines the struct of a group with the attributes shown in the
+**Thought process** section. Has several functions:
+  - _changeset(attrs)_: Uses `Ecto` to validate the format of `attrs`
+    and check if a valid group can be created.
+  - _new(attrs)_: Checks and inserts (if possible) a group with the
+    givet `attrs`
+  - _get(id)_: Receives an id and call
+    `CarPoolingChallenge.MemoryDatabase` to get it from the storage.
+  - _delete(id)_: Deletes a given group by `id`.
+  - _get\_unassigned\_groups()_: Return all the groups that do not
+    have a car assigned.
+  - _new\_journey(group, car)_: Assigns a given `group` to a given
+    `car`.
+
+**Note:** Cars do not have a `&new/1` function that inserts directly
+into the storage because each car is checked in the controller before
+passing it to the logic.
+
+### CarPoolingChallenge.GroupAssigner
+
+This module is in charge of an efficient assigment of cars to
+groups. Has a function called `&assign/0` that creates an async task
+to assign the cars.
