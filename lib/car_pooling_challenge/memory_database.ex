@@ -2,6 +2,7 @@ defmodule CarPoolingChallenge.MemoryDatabase do
   use GenServer
 
   alias CarPoolingChallenge.Model.Group
+  alias CarPoolingChallenge.Model.Car
 
   def child_spec(_) do
     %{
@@ -11,38 +12,97 @@ defmodule CarPoolingChallenge.MemoryDatabase do
   end
 
   # Client API
+  @doc """
+
+  Starts the MemoryDatabase genserver with the default state `%{cars:
+  %{}, groups: %{}}` and the name `CarPoolingChallenge.MemoryDatabase`
+
+  """
   def start_link() do
     GenServer.start_link(__MODULE__, %{cars: %{}, groups: %{}}, name: __MODULE__)
   end
 
+  @doc """
+
+  Inserts a car or a group into the database, the type is matched in
+  the handlers.
+
+  """
+  @spec insert(Group.t() | [Car.t()]) ::
+          {:ok, Group.t()} | {:ok, [Car.t()]} | {:error, :id_exists}
   def insert(data) do
     GenServer.call(__MODULE__, {:insert, data})
   end
 
+  @doc """
+
+  Gets a group by given id
+
+  """
+  @spec get_group(integer()) :: {:ok, Group.t()} | {:error, :not_found}
   def get_group(id) do
     GenServer.call(__MODULE__, {:get_group, id})
   end
 
+  @doc """
+
+  Deletes a group by given id
+
+  """
+  @spec delete_group(integer()) :: {:ok, Group.t()} | {:error, :not_found}
   def delete_group(id) do
     GenServer.call(__MODULE__, {:delete_group, id})
   end
 
+  @doc """
+
+  Gets all unassigned groups ordered by the time they were inserted so
+  the first group is the one that has been waited longer
+
+  """
+  @spec get_unassigned_groups() :: [Group.t()]
   def get_unassigned_groups() do
     GenServer.call(__MODULE__, :get_unassigned_groups)
   end
 
+  @doc """
+
+  Gets a car by given id
+
+  """
+  @spec get_car(integer()) :: {:ok, Car.t()} | {:error, :not_found}
   def get_car(id) do
     GenServer.call(__MODULE__, {:get_car, id})
   end
 
+  @doc """
+
+  Gets all available cars, this means all cars with free seats > 0
+
+  """
+  @spec get_free_cars() :: [Car.t()]
   def get_free_cars() do
     GenServer.call(__MODULE__, :get_free_cars)
   end
 
+  @doc """
+
+  Frees the amount of seats given by `people` of a car by given
+  `car_id`
+
+  """
+  @spec free_seats(integer(), integer()) :: :ok
   def free_seats(car_id, people) do
     GenServer.cast(__MODULE__, {:free_seats, car_id, people})
   end
 
+  @doc """
+
+  Adds the `car.id` to the given group and updates the free seats in
+  the car
+
+  """
+  @spec new_journey(Group.t(), Car.t()) :: :ok
   def new_journey(group, car) do
     GenServer.cast(__MODULE__, {:new_journey, group, car})
   end

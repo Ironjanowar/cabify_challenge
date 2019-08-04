@@ -288,3 +288,29 @@ passing it to the logic.
 This module is in charge of an efficient assigment of cars to
 groups. Has a function called `&assign/0` that creates an async task
 to assign the cars.
+
+It has the following functions:
+  - _assign()_: Creates a task that gets all the unassigned groups and
+    tries to assign a car to each one, prioritizing the ones that have
+    been waiting a longer time.
+  - _dropoff(id)_: Deletes a given group from the storage and the car
+    (if it is assigned to one)
+
+This module has a private function `&assign_car/1` that assigns a
+group to a car leaving the less free seats possible.
+
+### CarPoolingChallenge.MemoryDatabase
+
+This module acts as a database, storing the state of the
+application. It is a `GenServer` that has the following functions:
+  - _child\_spec()_: Defines the way it should be started.
+  - _start\_link()_: Starts the `GenServer` with the default state
+    `%{cars: %{}, groups: %{}}` and with the name
+    `CarPoolingChallenge.MemoryDatabase`. This means that this is a
+    named `GenServer` not meant to be replicated.
+  - _insert(data)_: Inserts a car or a group into the database, the
+    type is pattern matched in the handlers.
+  - _get\_group(id)_: Gets a group by a given id.
+  - _delete\_group(id)_: Deletes a group byy a given id.
+  - _get\_unassigned\_groups()_: Gets all unassigned groups ordered in
+    ascending order by its `inserted_at` attribute.

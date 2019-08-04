@@ -32,7 +32,8 @@ defmodule CarPoolingChallenge.GroupAssigner do
         ok
 
       rest ->
-        # This could be an not found error or an ok
+        # This could be a not found error or an ok if the group was
+        # not assigned
         rest
     end
   end
