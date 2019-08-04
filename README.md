@@ -195,8 +195,8 @@ In the application will exist two entities:
     + _inserted\_at_: A `DateTime` with the time when the group was
       inserted
 
-There is a `GroupAssigner` module that is in charge of assign cars to
-groups via an async `Task`, this module is going to be called every
+There is a `GroupAssigner` module that is in charge of assigning cars
+to groups via an async `Task`, this module is going to be called every
 time there is a `/cars`, `/journey` or `/dropoff` request. It would
 get the groups ordered by "waiting time" so the groups that have been
 longer time waiting are assigned first.
@@ -230,10 +230,10 @@ and cars in a list would be a lot less efficient.
 The cars and groups are always removed when not needed. In a
 production service it may be useful to store all the data, but since
 this is a challenge and it will complicate the solution, all data is
-deleted. Also, to store the data I will create another table for each
-entity (for analysis only) creating a primary key with the id and the
-current time, in order to store multiple cars or groups with the same
-id in different timestamps.
+deleted. Also, to store the deleted data I will create another table
+for each entity (for analysis only) creating a primary key with the id
+and the current time, in order to store multiple cars or groups with
+the same id in different timestamps.
 
 ## Modules
 
@@ -244,8 +244,9 @@ which is in charge of storing the state of the application.
 
 ### CarPoolingChallenge.Model.Car
 
-Defines the struct of a car with the attributes shown in the **Thought
-process** section. Has several functions:
+Defines the struct of a car with the attributes shown in the
+[**Thought process**](#thought-process) section. Has several
+functions:
   - _changeset(attrs)_: Uses `Ecto` to validate the format of `atttrs`
       and check if a valid car can be created.
   - _insert\_all(cars)_: Receives a list of `cars`, deletes all the
@@ -264,7 +265,8 @@ process** section. Has several functions:
 ### CarPoolingChallenge.Model.Group
 
 Defines the struct of a group with the attributes shown in the
-**Thought process** section. Has several functions:
+[**Thought process**](#thought-process) section. Has several
+functions:
   - _changeset(attrs)_: Uses `Ecto` to validate the format of `attrs`
     and check if a valid group can be created.
   - _new(attrs)_: Checks and inserts (if possible) a group with the
