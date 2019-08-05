@@ -98,8 +98,8 @@ defmodule CarPoolingChallenge.MemoryDatabase do
 
   @doc """
 
-  Adds the `car.id` to the given group and updates the free seats in
-  the car
+  Adds the `car.id` to the given `group` and updates the free seats in
+  the `car`
 
   """
   @spec new_journey(Group.t(), Car.t()) :: :ok

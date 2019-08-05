@@ -235,6 +235,38 @@ for each entity (for analysis only) creating a primary key with the id
 and the current time, in order to store multiple cars or groups with
 the same id in different timestamps.
 
+## Dependencies
+
+This are the project dependencies used in this application:
+  - **Phoenix**: For the API and all the project structure
+  - **Ecto**: For the model validation.
+  - **Jason**: For serialization and deserialization.
+
+## Router and controllers
+
+There are two pipelines, one that accepts `json` only and another one
+that accepts `json` and `urlencoded`. The routes piping throgh the
+`json` only are:
+  - `get("/status", StatusController, :status)`: Gets a `200 OK` as
+    response, it is a health check.
+  - `put("/cars", CarsController, :set_cars)`: Validates the input
+    parameters and creates the given cars removing the ones that
+    already exist.
+  - `post("/journey", JourneyController, :journey)`: Validates the
+    input parameters and assigns a car to a group if possible.
+
+The routes piping through the `json` and `urlencoded` are:
+  - `post("/dropoff", JourneyController, :dropoff)`: Validates the
+    input parameters and if possible removes the given group from the
+    system and frees the seats that were occupied by it (in case the
+    group was assigned to a car).
+  - `post("/locate", JourneyController, :locate)`: Validates the input
+    parameters and tries to find a group in the system.
+
+All the routes have a `match(:*, "/path", FallbackController,
+:invalid_method)` that matches all the valid paths with wrong verbs to
+send a `405 Method not allowed` error.
+
 ## Modules
 
 ### CarPoolingChallenge.Application
@@ -314,3 +346,32 @@ application. It is a `GenServer` that has the following functions:
   - _delete\_group(id)_: Deletes a group byy a given id.
   - _get\_unassigned\_groups()_: Gets all unassigned groups ordered in
     ascending order by its `inserted_at` attribute.
+  - _get\_car(id)_: Gets a car by a given id.
+  - _get\_free\_cars()_: Gets all cars that have one or more free
+    seats.
+  - _free\_seats(car\_id, people)_: Frees the amount of seats
+    determined by `people` of the car determined by `car_id`. This
+    function is executed asynchronously via `GenServer.cast`.
+  - _new\_journey(group, car)_: Assigns the `group` to a `car`, adding
+    the `car.id` to the group and updating the free seats in the
+    `car`. This function is executed asynchronously via
+    `GenServer.cast`.
+
+This module could have been an `Agent`, it is easier to update and
+maintains bigger states. But I defined a `GenServer` just in case the
+module needed to do more than just store and update the state.
+
+## Trouble with gitlab CI
+
+I had some trouble using gitlab CI, the docker container could not be
+reached by the `harness` tests in the `acceptance` stage. After
+several tests and Google searches I found [this
+comment](https://gitlab.com/charts/gitlab/issues/478#note_199237922)
+from @vovkd that suggests removing `DOCKER_HOST: tcp://docker:2375`
+from the config. I tried that and it worked for me, but just some
+minutes after, I pushed to the repository some docs only and it
+failed. I put again the `DOCKER_HOST: tcp://docker:2375` and again
+started to work.
+
+This got me very confused a phew days, but it works now with the
+memory database version.

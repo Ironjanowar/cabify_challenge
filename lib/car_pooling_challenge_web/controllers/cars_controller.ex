@@ -12,7 +12,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
   cars, Phoenix delivers it paired with the "_json" key.
 
   All the cars are validated and if any of them is not valid all the
-  input is consedered invalid.
+  input is considered invalid.
 
   """
   def set_cars(conn, %{"_json" => car_params}) do
