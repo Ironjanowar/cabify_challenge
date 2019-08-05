@@ -6,6 +6,7 @@ stages:
 
 test:
   stage: test
+  image: bitwalker/alpine-elixir:1.9.0
   before_script:
     - mix local.hex --force
     - mix deps.get --only test
