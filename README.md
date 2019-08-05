@@ -179,6 +179,8 @@ The config is pretty much standard except for:
  - Default port changed to 9091 on `prod`.
  - Server was set to true in `CarPoolingChallengeWeb.Endpoint` so the
    release works.
+ - The `secret_key_base` is obtained by environment variable but has
+   `"default_secret"` by default.
 
 ## Thought process
 

@@ -19,12 +19,10 @@ COPY . /app
 WORKDIR /app
 
 ENV MIX_ENV=prod
-ENV SECRET_KEY_BASE="$(mix phx.gen.secret)"
 RUN mix deps.get
 RUN mix deps.compile
 RUN mix compile
 
 RUN mix release
-RUN ls /app/_build
 
 ENTRYPOINT [ "_build/prod/rel/car_pooling_challenge/bin/car_pooling_challenge", "start"]
