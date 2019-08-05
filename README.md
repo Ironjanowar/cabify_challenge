@@ -361,6 +361,13 @@ This module could have been an `Agent`, it is easier to update and
 maintains bigger states. But I defined a `GenServer` just in case the
 module needed to do more than just store and update the state.
 
+## Deployment
+
+This project uses `docker` to deploy, the `Dockerfile` gets all the
+needed dependencies, sets the environment variables, compiles the
+project, creates a release using the `mix release` command and
+executes the binary generated.
+
 ## Trouble with gitlab CI
 
 I had some trouble using gitlab CI, the docker container could not be
