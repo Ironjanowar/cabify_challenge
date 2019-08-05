@@ -6,9 +6,10 @@ stages:
 
 tests:
   stage: tests
+  before_script:
+    - mix local.hex --force
+    - mix deps.get --only test
   script:
-    - mix deps.get
-    - mix compile
     - mix test
 
 build_image:
