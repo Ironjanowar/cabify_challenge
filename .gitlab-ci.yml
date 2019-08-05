@@ -1,7 +1,15 @@
 ---
 stages:
+  - test
   - docker
   - acceptance
+
+tests:
+  stage: tests
+  script:
+    - mix deps.get
+    - mix compile
+    - mix test
 
 build_image:
  stage: docker
