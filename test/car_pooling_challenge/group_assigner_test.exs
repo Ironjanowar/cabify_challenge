@@ -27,12 +27,12 @@ defmodule CarPoolingChallenge.GroupAssignerTest do
     cars |> Enum.map(&(Car.check_params(&1) |> elem(1))) |> Car.insert_all()
 
     unassigned_groups = Group.get_unassigned_groups()
-    refute length(unassigned_groups) == 0
+    refute Enum.empty?(unassigned_groups)
 
     GroupAssigner.assign() |> Task.await()
 
     unassigned_groups = Group.get_unassigned_groups()
-    assert length(unassigned_groups) == 0
+    assert Enum.empty?(unassigned_groups)
   end
 
   test "Dropoff a group" do

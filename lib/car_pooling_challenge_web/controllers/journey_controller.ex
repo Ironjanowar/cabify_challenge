@@ -69,8 +69,7 @@ defmodule CarPoolingChallengeWeb.JourneyController do
       {:car, _} ->
         conn |> send_resp(204, "")
 
-      err ->
-        IO.inspect(err)
+      _err ->
         conn |> send_resp(500, "")
     end
   end

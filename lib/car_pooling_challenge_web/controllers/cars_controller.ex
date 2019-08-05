@@ -6,6 +6,13 @@ defmodule CarPoolingChallengeWeb.CarsController do
   alias CarPoolingChallenge.Model.Car
   alias CarPoolingChallenge.GroupAssigner
 
+  defp check_params(car, acc) do
+    case Car.check_params(car) do
+      {:ok, car} -> {:cont, [car | acc]}
+      _ -> {:halt, :bad_params}
+    end
+  end
+
   @doc """
 
   Validates the input parameters. Since the expected parameter is a list of
@@ -16,14 +23,7 @@ defmodule CarPoolingChallengeWeb.CarsController do
 
   """
   def set_cars(conn, %{"_json" => car_params}) do
-    check_params = fn car, acc ->
-      case Car.check_params(car) do
-        {:ok, car} -> {:cont, [car | acc]}
-        _ -> {:halt, :bad_params}
-      end
-    end
-
-    case Enum.reduce_while(car_params, [], check_params) do
+    case Enum.reduce_while(car_params, [], &check_params/2) do
       :bad_params ->
         conn |> send_resp(400, "")
 
