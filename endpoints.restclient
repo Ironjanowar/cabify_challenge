@@ -1,4 +1,4 @@
-:host = localhost:4000
+:host = localhost:4000 
 :docker = localhost:9091
 
 # GET docker/status
